@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="main_color">#fbf8ef</color>
+    <color name="secondary_color">#f39768</color>
+    <color name="extra_color">#bcaea1</color>
+    <color name="text_color">#787065</color>
+
+    // board color
+    <color name="empty_color">#cbc2b3</color>
+    //stone color
+    <color name="color1">#ece0c8</color>
+    <color name="color2">#eeb17b</color>
+    <color name="color3">#f39768</color>
+    <color name="color4">#eee6db</color>
+    // Splash screen color
+    <color name="splash_bg_color">#4F72A1</color>
+    <color name="splash_text_color">#D1D1D1</color>
+    //win_layout
+    <color name="high_score_color">#e8be4e</color>
+
+</resources>

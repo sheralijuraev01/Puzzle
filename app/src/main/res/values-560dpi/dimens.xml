@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    // splash activity
+    <dimen name="splash_image_size">100dp</dimen>
+    <dimen name="splash_text_size">60sp</dimen>
+    //game activity
+    <dimen name="board_height">380dp</dimen>
+    <dimen name="text_size_stone">45sp</dimen>
+    <dimen name="text_size_time">24sp</dimen>
+    <dimen name="text_size_title">21sp</dimen>
+    <dimen name="text_size_score">18sp</dimen>
+    <dimen name="width_clock">32dp</dimen>
+    <dimen name="height_clock">35dp</dimen>
+    <dimen name="height_main_layout">50dp</dimen>
+    <dimen name="size_image_score">20dp</dimen>
+    //menu layout
+    <dimen name="text_size_menu_btn">22sp</dimen>
+    // about app layout
+    <dimen name="text_size_about_title">30sp</dimen>
+    <dimen name="text_size_about_text">22sp</dimen>
+    <dimen name="text_size_about_btn">24sp</dimen>
+    <dimen name="scroll_about_height">300dp</dimen>
+    // game over layout
+    <dimen name="game_over_image_btn_size">70dp</dimen>
+    <dimen name="game_over_image_padding">17dp</dimen>
+    <dimen name="game_over_image_size">40dp</dimen>
+    <dimen name="game_over_state_text_size">30sp</dimen>
+    <dimen name="game_over_text_size">25sp</dimen>
+</resources>

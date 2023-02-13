@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="16dp"
+    android:background="@drawable/items_background"
+    android:padding="5dp"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:background="@drawable/board_background"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Good Job"
+            android:textSize="@dimen/game_over_state_text_size"
+            android:layout_marginTop="16dp"
+            android:id="@+id/winConditionText"
+            android:fontFamily="@font/font"
+            android:textColor="@color/white"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="70dp"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="16dp"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/high_score_background"
+            android:orientation="horizontal">
+             <ImageView
+                 android:layout_width="@dimen/game_over_image_size"
+                 android:layout_height="@dimen/game_over_image_size"
+                 android:src="@drawable/clock_win"
+                 android:gravity="start"/>
+
+            <TextView
+                android:id="@+id/win_time"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="05:28"
+                android:fontFamily="@font/font"
+                android:gravity="center_horizontal"
+                android:textColor="@color/white"
+                android:textSize="@dimen/game_over_text_size"
+                />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="70dp"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="16dp"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/high_score_background"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="@dimen/game_over_image_size"
+                android:layout_height="@dimen/game_over_image_size"
+                android:padding="4dp"
+                android:src="@drawable/swap_vertical_icon"
+                android:gravity="start"/>
+
+            <TextView
+                android:id="@+id/win_move"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="236"
+                android:gravity="center_horizontal"
+                android:textColor="@color/white"
+                android:textSize="@dimen/game_over_text_size"
+              android:fontFamily="@font/font" />
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginVertical="25dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/win_exit"
+                android:layout_width="@dimen/game_over_image_btn_size"
+                android:layout_height="@dimen/game_over_image_btn_size"
+                android:padding="@dimen/game_over_image_padding"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/stone_bg4"
+                android:src="@drawable/back_arrow"/>
+            <ImageView
+                android:id="@+id/win_refresh"
+                android:layout_width="@dimen/game_over_image_btn_size"
+                android:layout_height="@dimen/game_over_image_btn_size"
+                android:padding="@dimen/game_over_image_padding"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/stone_bg4"
+                android:src="@drawable/reload"/>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>
