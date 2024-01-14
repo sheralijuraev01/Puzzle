@@ -9,4 +9,9 @@
     <string name="description">Place numbers from 1 to 15!</string>
     <string name="exit">Exit</string>
     <string name="about_app_text">The 15 puzzle (also called Gem Puzzle, Boss Puzzle, Game of Fifteen, Mystic Square and many others) is a sliding puzzle having 15 square tiles numbered 1–15 in a frame that is 4 tiles high and 4 tiles wide, leaving one unoccupied tile position. Tiles in the same row or column of the open position can be moved by sliding them horizontally or vertically, respectively. The goal of the puzzle is to place the tiles in numerical order.</string>
+    <string name="comp_name">Sher Software Mobile Group</string>
+    <string name="setting">Setting</string>
+    <string name="sound">Sound</string>
+    <string name="delete_high_score">Delete high score</string>
+    <string name="delete_text">The highest score will be deleted. Are you sure?</string>
 </resources>

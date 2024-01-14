@@ -2,8 +2,6 @@ package uz.sher.puzzle15.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
@@ -14,65 +12,43 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
- import uz.sher.puzzle15.R;
+import java.util.Objects;
+
+import uz.sher.puzzle15.R;
+import uz.sher.puzzle15.data.SharedRepository;
 import uz.sher.puzzle15.databinding.FragmentGameBinding;
+import uz.sher.puzzle15.util.MySoundPool;
 
 public class GameFragment extends Fragment implements View.OnClickListener {
     FragmentGameBinding binding;
-
-
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private String mParam1;
-    private String mParam2;
     private static List<Integer> numbers = new ArrayList<>();
     private int x;
     private int y; // x va y empty button koordinatasi
     private Button emptyButton;
     private int moveCount = 0;
-    private int drawablePositon = 0;
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor shaEditor;
-    private SharedPreferences shPHighScore;
-    private SharedPreferences.Editor shPEditHighScore;
+    private int drawablePosition = 0;
+
     private long saveTime = 0L;
     private boolean isContinue = false;
     private boolean exitByWinDialog = false;
     private long highTimeSave = 0L;
     private int highMoveSave = 0;
+    private SharedRepository sharedRepository;
 
+    private MySoundPool mySoundPool;
 
+    private boolean soundStatus;
 
     private final int[] backDrawable = {R.drawable.stone_bg1, R.drawable.stone_bg2, R.drawable.stone_bg3, R.drawable.stone_bg4};
 
-
-    //     TODO: Rename and change types and number of parameters
-    public static GameFragment newInstance(String param1, String param2) {
-        GameFragment fragment = new GameFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -86,23 +62,30 @@ public class GameFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        sharedPreferences = requireActivity().getSharedPreferences("SaveItems", Context.MODE_PRIVATE);
-        isContinue = sharedPreferences.getBoolean("isContinue", false);
+        sharedRepository = new SharedRepository(binding.getRoot().getContext());
+
+        mySoundPool = new MySoundPool(binding.getRoot().getContext());
+
+        soundStatus = sharedRepository.getSoundStatus();
+
+
+        isContinue = sharedRepository.getContinue();
         if (isContinue) {
-            saveTime = sharedPreferences.getLong("time", 0L);
-            moveCount = sharedPreferences.getInt("moveCount", 0);
+            saveTime = sharedRepository.getTime();
+            moveCount = sharedRepository.getMove();
             binding.moveCount.setText(String.valueOf(moveCount));
+
         }
 
-        shPHighScore = requireActivity().getSharedPreferences("HighScore", Context.MODE_PRIVATE);
-        String strTime = shPHighScore.getString("highTime", "00:00");
+        String strTime = sharedRepository.getHighTime();
         highTimeSave = formatTimeLong(strTime);
-        highMoveSave = shPHighScore.getInt("highMove", 0);
+        highMoveSave = sharedRepository.getHighMove();
         binding.highTimeScore.setText(strTime);
         binding.highMoveSave.setText(String.valueOf(highMoveSave));
 
         loadAnimation();
         game();
+
 
         controlTimer();
 
@@ -125,14 +108,20 @@ public class GameFragment extends Fragment implements View.OnClickListener {
         binding.button16.setOnClickListener(this);
 
         binding.refreshButton.setOnClickListener(v -> {
-            reshreshGame();
+            if (soundStatus) mySoundPool.playClickButton();
+            refreshGame();
         });
         binding.backButton.setOnClickListener(v -> {
+            if (soundStatus) mySoundPool.playClickButton();
             getParentFragmentManager().beginTransaction().replace(R.id.mainFragmentContainer, new MenuFragment()).commit();
         });
     }
 
-    private void reshreshGame() {
+
+    @SuppressLint("ObsoleteSdkInt")
+
+
+    private void refreshGame() {
         newGameShuffle();
         moveCount = 0;
         binding.moveCount.setText(String.valueOf(moveCount));
@@ -151,7 +140,7 @@ public class GameFragment extends Fragment implements View.OnClickListener {
     @SuppressLint("ResourceAsColor")
     public void newGameShuffle() {
         if (isContinue) {
-            String[] arr = getNumberPostion();
+            String[] arr = getNumberPosition();
             numbers.clear();
             for (int i = 0; i < 16; i++) {
                 numbers.add(Integer.parseInt(arr[i]));
@@ -176,8 +165,8 @@ public class GameFragment extends Fragment implements View.OnClickListener {
 
             } else {
                 ((Button) binding.gridLayout.getChildAt(i)).setText(String.valueOf(numbers.get(i)));
-                determineDrawablePositon(numbers.get(i));
-                binding.gridLayout.getChildAt(i).setBackgroundResource(backDrawable[drawablePositon]);
+                determineDrawablePosition(numbers.get(i));
+                binding.gridLayout.getChildAt(i).setBackgroundResource(backDrawable[drawablePosition]);
                 if (numbers.get(i) > 8)
                     ((Button) binding.gridLayout.getChildAt(i)).setTextColor(getResources().getColor(R.color.white));
                 else
@@ -200,11 +189,11 @@ public class GameFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    private void determineDrawablePositon(int index) {
-        if (index < 5) drawablePositon = 0;
-        else if (index < 9) drawablePositon = 1;
-        else if (index < 13) drawablePositon = 2;
-        else drawablePositon = 3;
+    private void determineDrawablePosition(int index) {
+        if (index < 5) drawablePosition = 0;
+        else if (index < 9) drawablePosition = 1;
+        else if (index < 13) drawablePosition = 2;
+        else drawablePosition = 3;
     }
 
     public static void fillToArray() {
@@ -270,6 +259,8 @@ public class GameFragment extends Fragment implements View.OnClickListener {
     }
 
     private void winDialog() {
+
+
         String time = binding.time.getText().toString();
         binding.time.stop();
         AlertDialog.Builder builder = new AlertDialog.Builder(binding.getRoot().getContext());
@@ -277,7 +268,7 @@ public class GameFragment extends Fragment implements View.OnClickListener {
         dialog.setCancelable(false);
         requireActivity().getWindow().setNavigationBarColor(0);
         dialog.setContentView(R.layout.game_over_layout);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
         dialog.show();
         ImageView refreshBtn = dialog.findViewById(R.id.win_refresh);
         ImageView exitBtn = dialog.findViewById(R.id.win_exit);
@@ -288,35 +279,46 @@ public class GameFragment extends Fragment implements View.OnClickListener {
         winMove.setText(String.valueOf(moveCount));
         winTime.setText(binding.time.getText().toString());
 
-        shPEditHighScore = shPHighScore.edit();
-
-        highTimeSave = formatTimeLong(shPHighScore.getString("highTime", "00:00"));
-        highMoveSave = shPHighScore.getInt("highMove", 0);
 
         boolean isTime = false;
         boolean isMove = false;
+
+
         if (formatTimeLong(time) < highTimeSave || highTimeSave == 0) {
-            shPEditHighScore.putString("highTime", time);
+
+            sharedRepository.saveHighTime(time);
             binding.highTimeScore.setText(time);
             isTime = true;
         }
         if (highMoveSave > moveCount || highMoveSave == 0) {
-            shPEditHighScore.putInt("highMove", moveCount);
+            sharedRepository.saveHighMove(moveCount);
             binding.highMoveSave.setText(String.valueOf(moveCount));
             isMove = true;
         }
-        shPEditHighScore.commit();
 
-        if (isTime && isMove) winConditionText.setText("High Score");
-        else if (isTime) winConditionText.setText("High Score Time");
-        else if (isMove) winConditionText.setText("High Score Move");
-        else winConditionText.setText("Good Job");
+
+        if (isTime && isMove) {
+            if (soundStatus) mySoundPool.playSoundWin();
+            winConditionText.setText("High Score");
+
+        } else if (isTime) {
+            winConditionText.setText("High Score Time");
+            if (soundStatus) mySoundPool.playSoundWin();
+        } else if (isMove) {
+            winConditionText.setText("High Score Move");
+            if (soundStatus) mySoundPool.playSoundWin();
+        } else {
+            winConditionText.setText("Good Job");
+            if (soundStatus) mySoundPool.playGameOver();
+        }
 
         refreshBtn.setOnClickListener(v -> {
-            reshreshGame();
+            if (soundStatus) mySoundPool.playClickButton();
+            refreshGame();
             dialog.dismiss();
         });
         exitBtn.setOnClickListener(v -> {
+            if (soundStatus) mySoundPool.playClickButton();
             dialog.dismiss();
             exitByWinDialog = true;
             getParentFragmentManager().beginTransaction().replace(R.id.mainFragmentContainer, new MenuFragment()).commit();
@@ -332,17 +334,14 @@ public class GameFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-
-
-
         Button clicked = (Button) v;
         String tag = v.getTag().toString();
         int clickedX = tag.charAt(0) - '0';
         int clickedY = tag.charAt(1) - '0';
 
-        boolean isHorizontal = (Math.abs(x - clickedX) == 0 && Math.abs(y - clickedY) == 1),
-                isVertical = (Math.abs(x - clickedX) == 1 && Math.abs(y - clickedY) == 0);
+        boolean isHorizontal = (Math.abs(x - clickedX) == 0 && Math.abs(y - clickedY) == 1), isVertical = (Math.abs(x - clickedX) == 1 && Math.abs(y - clickedY) == 0);
         if (isHorizontal || isVertical) {
+            if (soundStatus) mySoundPool.playClickStone();
 
             animateMoveButton(clickedX, clickedY, isHorizontal, isVertical, clicked);
             moveCount++;
@@ -351,8 +350,8 @@ public class GameFragment extends Fragment implements View.OnClickListener {
             clicked.setText("");
             clicked.setBackgroundResource(R.drawable.default_stone);
 
-            determineDrawablePositon(Integer.parseInt(text));
-            emptyButton.setBackgroundResource(backDrawable[drawablePositon]);
+            determineDrawablePosition(Integer.parseInt(text));
+            emptyButton.setBackgroundResource(backDrawable[drawablePosition]);
 
             emptyButton.setText(text);
             if (Integer.parseInt(text) > 8)
@@ -373,9 +372,9 @@ public class GameFragment extends Fragment implements View.OnClickListener {
         Animation leftToRight = AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.lefttoright);
         Animation rightToLeft = AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.righttoleft);
         Animation upToDown = AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.uptodown);
-        Animation downToUp= AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.downtoup);
+        Animation downToUp = AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.downtoup);
         if (isHorizontal) {
-            if (y>clickY) {
+            if (y > clickY) {
                 // empty button chapga , clikced button o'ngga
                 clicked.startAnimation(rightToLeft);
                 emptyButton.startAnimation(leftToRight);
@@ -422,12 +421,11 @@ public class GameFragment extends Fragment implements View.OnClickListener {
     }
 
     private void saveItems() {
-        shaEditor = sharedPreferences.edit();
-        shaEditor.putLong("time", formatTimeLong(binding.time.getText().toString()));
-        shaEditor.putString("numberPosition", savePuzzleNumberPosition());
-        shaEditor.putInt("moveCount", moveCount);
-        shaEditor.putBoolean("isContinue", !exitByWinDialog);
-        shaEditor.commit();
+
+        sharedRepository.saveTime(formatTimeLong(binding.time.getText().toString()));
+        sharedRepository.saveMove(moveCount);
+        sharedRepository.saveNumberPositions(savePuzzleNumberPosition());
+        sharedRepository.saveContinue(!exitByWinDialog);
     }
 
     private String savePuzzleNumberPosition() {
@@ -440,21 +438,24 @@ public class GameFragment extends Fragment implements View.OnClickListener {
         }
         return numberPosition.toString();
     }
-    private String[] getNumberPostion() {
-        sharedPreferences = requireActivity().getSharedPreferences("SaveItems", Context.MODE_PRIVATE);
-        String numPosition = sharedPreferences.getString("numberPosition", null);
+
+    private String[] getNumberPosition() {
+
+        String numPosition = sharedRepository.getNumberPositions();
         if (numPosition == null) return new String[]{};
         return numPosition.split(":");
     }
+
     @Override
     public void onStop() {
         saveItems();
         super.onStop();
     }
+
     @Override
     public void onDestroy() {
-        super.onDestroy();
-        saveItems();
+         super.onDestroy();
         binding = null;
+
     }
 }

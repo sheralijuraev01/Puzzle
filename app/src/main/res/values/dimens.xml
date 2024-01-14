@@ -27,6 +27,9 @@
     <dimen name="game_over_state_text_size">30sp</dimen>
     <dimen name="game_over_text_size">25sp</dimen>
 
+    // game setting
+    <dimen name="back_width">40dp</dimen>
+
 
 
 
