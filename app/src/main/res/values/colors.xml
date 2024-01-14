@@ -25,4 +25,6 @@
     //win_layout
     <color name="high_score_color">#e8be4e</color>
 
+    <color name="danger_color">#D23333</color>
+
 </resources>
