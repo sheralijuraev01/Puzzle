@@ -46,7 +46,6 @@ public class MenuFragment extends Fragment {
 
         mySoundPool = new MySoundPool(binding.getRoot().getContext());
 
-
         soundStatus = sharedRepository.getSoundStatus();
 
         isContinue = sharedRepository.getContinue();
